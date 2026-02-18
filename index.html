@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WOLF LABS | INTERACTIVE ACCESS LAB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Inter:wght@300;400;700&family=Space+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #050505;
+            --accent-color: #6C5CE7; /* Indigo for Strategy/Thinking */
+            --card-bg: rgba(255, 255, 255, 0.06);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-main: #FFFFFF;
+            --text-dim: #A0A0A0;
+            --safe-margin: 40px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Header / Branding */
+        header {
+            position: absolute;
+            top: 30px;
+            left: var(--safe-margin);
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.05);
+        }
+        .progress-bar {
+            height: 100%;
+            background: var(--accent-color);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        /* Main Lab Card */
+        .lab-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            padding: 60px;
+            text-align: center;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 32px;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .question-text {
+            font-size: 20px;
+            font-weight: 300;
+            margin-bottom: 40px;
+            color: var(--text-dim);
+        }
+
+        .input-area {
+            margin-bottom: 30px;
+        }
+
+        input[type="text"] {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--accent-color);
+            color: #fff;
+            font-size: 24px;
+            text-align: center;
+            width: 100%;
+            outline: none;
+            font-family: 'Space Mono', monospace;
+            padding: 10px;
+        }
+
+        /* Speaking Starter Prompt */
+        .speaking-starter {
+            background: rgba(108, 92, 231, 0.1);
+            border-left: 4px solid var(--accent-color);
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 14px;
+            text-align: left;
+            display: none;
+        }
+
+        .btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            filter: brightness(1.2);
+        }
+
+        .feedback {
+            margin-top: 20px;
+            font-size: 14px;
+            font-family: 'Space Mono', monospace;
+        }
+
+        footer {
+            position: absolute;
+            bottom: 30px;
+            right: var(--safe-margin);
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+
+    <header>WOLF LABS | MAIN SERIES | ACCESS LAB</header>
+
+    <div class="lab-card" id="labCard">
+        <h1 id="taskTitle">Task 01</h1>
+        <p class="question-text" id="questionText">Loading mission...</p>
+        
+        <div class="input-area" id="inputArea">
+            <input type="text" id="userInput" placeholder="Type your answer here..." autocomplete="off">
+        </div>
+
+        <button class="btn" onclick="checkAnswer()">Submit Mission</button>
+
+        <div class="feedback" id="feedback"></div>
+
+        <div class="speaking-starter" id="speakingStarter">
+            <strong>SPEAKING STARTER:</strong> <span id="starterText"></span>
+            <br><br>
+            <em style="color: var(--accent-color);">FOLLOW-UP CHALLENGE: Why? / Give me an example.</em>
+        </div>
+    </div>
+
+    <footer id="counter">01 / 25</footer>
+
+    <script>
+        const exercises = [
+            { title: "Recognition", q: "Hi, ____ Tim. (I am / You are)", a: "I am", starter: "My name is... and I am from..." },
+            { title: "Recognition", q: "What ____ your name?", a: "is", starter: "Usually, people call me..." },
+            { title: "Identity", q: "She ____ Sian.", a: "is", starter: "She is my friend and her name is..." },
+            { title: "Identity", q: "____ name is Georgie. (Her / His)", a: "Her", starter: "I know her, she is..." },
+            { title: "Identity", q: "____ name is Buli. (Her / His)", a: "His", starter: "He is from... and his name is..." },
+            { title: "Grammar: Affirmative", q: "I ____ a student.", a: "am", starter: "I am a student at..." },
+            { title: "Grammar: Affirmative", q: "You ____ my teacher.", a: "are", starter: "You are a great teacher because..." },
+            { title: "Grammar: Affirmative", q: "It ____ nice to meet you.", a: "is", starter: "It is nice to meet you because..." },
+            { title: "Grammar: Negative", q: "I ____ not Tim. (am / is)", a: "am", starter: "I am not Tim, I am..." },
+            { title: "Grammar: Negative", q: "He ____ not from London.", a: "is", starter: "He is not from London, he is from..." },
+            { title: "Grammar: Negative", q: "They ____ not here.", a: "are", starter: "They are not here because..." },
+            { title: "Grammar: Question", q: "____ you Sian?", a: "Are", starter: "Are you Sian? No, I am..." },
+            { title: "Grammar: Question", q: "____ he your friend?", a: "Is", starter: "Is he your friend? Yes, he is..." },
+            { title: "Transformation", q: "Change to negative: 'I am happy.'", a: "I am not happy", starter: "Today, I am not happy because..." },
+            { title: "Transformation", q: "Change to question: 'She is Georgie.'", a: "Is she Georgie?", starter: "Is she Georgie? I think she is..." },
+            { title: "Contractions", q: "I am = ____", a: "I'm", starter: "I'm very interested in..." },
+            { title: "Contractions", q: "He is = ____", a: "He's", starter: "He's a very..." },
+            { title: "Contractions", q: "You are = ____", a: "You're", starter: "You're my best..." },
+            { title: "Short Answers", q: "Are you a student? Yes, I ____.", a: "am", starter: "Yes, I am. I study..." },
+            { title: "Short Answers", q: "Is she Sian? No, she ____.", a: "isn't", starter: "No, she isn't. She is..." },
+            { title: "Real Life", q: "How do you say 'Olá' in English?", a: "Hello", starter: "I usually say Hello to..." },
+            { title: "Real Life", q: "Complete: Nice to ____ you.", a: "meet", starter: "It's always nice to meet people who..." },
+            { title: "Speaking Arena", q: "Introduce yourself: I ____ [Your Name].", a: "am", starter: "I am... and my name was chosen by..." },
+            { title: "Speaking Arena", q: "Ask a partner: What ____ your name?", a: "is", starter: "What is your name? Do you have a nickname?" },
+            { title: "Wolf Ultimatum", q: "Final: 'I ____ ready to speak!'", a: "am", starter: "I am ready to speak because..." }
+        ];
+
+        let currentEx = 0;
+
+        function updateLab() {
+            const ex = exercises[currentEx];
+            document.getElementById('taskTitle').innerText = `Task ${String(currentEx + 1).padStart(2, '0')}`;
+            document.getElementById('questionText').innerText = ex.q;
+            document.getElementById('userInput').value = "";
+            document.getElementById('feedback').innerText = "";
+            document.getElementById('speakingStarter').style.display = "none";
+            document.getElementById('counter').innerText = `${String(currentEx + 1).padStart(2, '0')} / 25`;
+            
+            const progress = ((currentEx + 1) / 25) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+        }
+
+        function checkAnswer() {
+            const input = document.getElementById('userInput').value.trim().toLowerCase();
+            const correct = exercises[currentEx].a.toLowerCase();
+
+            if (input === correct || input.includes(correct)) {
+                document.getElementById('feedback').innerHTML = "<span style='color: #22c55e;'>MISSION COMPLETE. NOW SPEAK!</span>";
+                document.getElementById('starterText').innerText = exercises[currentEx].starter;
+                document.getElementById('speakingStarter').style.display = "block";
+                
+                setTimeout(() => {
+                    if (currentEx < exercises.length - 1) {
+                        currentEx++;
+                        updateLab();
+                    } else {
+                        document.getElementById('labCard').innerHTML = "<h1>LEVEL COMPLETE</h1><p>You are ready for the next mission.</p>";
+                    }
+                }, 4000); // 4 seconds to read the speaking starter
+            } else {
+                document.getElementById('feedback').innerHTML = "<span style='color: #ef4444;'>SYSTEM ERROR: TRY AGAIN.</span>";
+            }
+        }
+
+        // Initialize
+        updateLab();
+    </script>
+</body>
+</html>
